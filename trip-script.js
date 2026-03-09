@@ -1323,6 +1323,8 @@ function formatDateLong(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
 }
+flatpickr("#trip-start-date");
+flatpickr("#trip-end-date");
 
 // Initialize the app
 init();
