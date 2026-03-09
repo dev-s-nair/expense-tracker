@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip/Event Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <button id="dark-mode-toggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
+        <span class="dark-mode-icon"></span>
+    </button>
+
+    <div class="container" id="trip-tracker">
+        <!-- Header with Back Button -->
+        <div class="tracker-header">
+            <button id="back-from-trip" class="back-btn" onclick="history.back()">← BACK</button>
+            <h1>Trip/Event Tracker</h1>
+        </div>
+        <p class="subtitle">Manage expenses for trips and events with smart tracking</p>
+        <hr class="section-divider">
+
+        <!-- Trip Selection/Creation Section -->
+        <div class="trip-selector-section">
+            <div class="trip-selector-header">
+                <h3>Current Trip</h3>
+                <button id="new-trip-btn" class="add-member-btn">+ New Trip</button>
+            </div>
+            <div id="trip-select-container">
+                <select id="trip-select" class="trip-select">
+                    <option value="">No trips yet - Create one!</option>
+                </select>
+                <button id="edit-trip-btn" class="icon-btn" style="display: none;" title="Edit trip">✏️</button>
+                <button id="delete-trip-btn" class="icon-btn" style="display: none;" title="Delete trip">🗑️</button>
+                <button id="lock-trip-btn" class="icon-btn" style="display: none;" title="Lock/Complete trip">🔒</button>
+            </div>
+        </div>
+
+        <!-- New/Edit Trip Modal -->
+        <div id="trip-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="trip-modal-title">Create New Trip</h3>
+                    <button type="button" class="modal-close" id="close-trip-modal">&times;</button>
+                </div>
+                <form id="trip-form">
+                    <div class="form-group">
+                        <label for="trip-name">Trip/Event Name *</label>
+                        <input type="text" id="trip-name" placeholder="e.g., Goa Trip 2026, John's Birthday Party" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trip-start-date">Start Date *</label>
+                        <input type="date" id="trip-start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trip-end-date">End Date *</label>
+                        <input type="date" id="trip-end-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trip-budget">Budget Limit (₹) - Optional</label>
+                        <input type="number" id="trip-budget" placeholder="Enter total budget (leave blank for no limit)" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="trip-description">Description - Optional</label>
+                        <textarea id="trip-description" rows="3" placeholder="Trip details, notes, etc..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="trip-form-submit">Create Trip</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Content Area (shown only when trip is selected) -->
+        <div id="main-content" style="display: none;">
+            
+            <!-- Trip Info Card -->
+            <div class="trip-info-card">
+                <div class="trip-info-header">
+                    <div>
+                        <h2 id="current-trip-name">Trip Name</h2>
+                        <p id="current-trip-dates" class="trip-dates"></p>
+                        <p id="current-trip-description" class="trip-description"></p>
+                    </div>
+                    <div id="trip-locked-badge" style="display: none;">
+                        <span class="locked-badge">🔒 COMPLETED</span>
+                    </div>
+                </div>
+                <div class="trip-stats-grid">
+                    <div class="trip-stat-box">
+                        <span class="stat-label">Total Spent</span>
+                        <span class="stat-value" id="trip-total-spent">₹0.00</span>
+                    </div>
+                    <div class="trip-stat-box">
+                        <span class="stat-label">Budget</span>
+                        <span class="stat-value" id="trip-budget-display">No Limit</span>
+                    </div>
+                    <div class="trip-stat-box">
+                        <span class="stat-label">Remaining</span>
+                        <span class="stat-value" id="trip-remaining">-</span>
+                    </div>
+                    <div class="trip-stat-box">
+                        <span class="stat-label">Per Person</span>
+                        <span class="stat-value" id="trip-per-person">₹0.00</span>
+                    </div>
+                </div>
+                <div id="budget-alert" class="budget-alert" style="display: none;"></div>
+            </div>
+
+            <!-- Participants Section -->
+            <div class="members-section">
+                <h3>👥 Participants</h3>
+                <hr class="content-divider">
+                <div class="member-input-group">
+                    <input type="text" id="participant-name" placeholder="Enter participant name...">
+                    <button id="add-participant-btn" class="add-member-btn">Add Participant</button>
+                </div>
+                <div id="participants-list" class="members-list"></div>
+                <div class="member-stats" id="participant-stats"></div>
+            </div>
+
+            <!-- Balance & Summary Section -->
+            <div class="summary">
+                <div class="summary-item income-box">
+                    <h4>Total Expenses</h4>
+                    <p id="total-expenses">₹0.00</p>
+                </div>
+                <div class="summary-item expense-box">
+                    <h4>Total Days</h4>
+                    <p id="total-days">0</p>
+                </div>
+            </div>
+
+            <!-- Settlement Section -->
+            <div class="settlement-section">
+                <h3>💳 Who Owes Whom</h3>
+                <div id="trip-settlements-list" class="settlements-list">
+                    <p class="empty-message">Add participants and expenses to see settlements</p>
+                </div>
+            </div>
+
+            <!-- Record Payment Section -->
+            <div class="payment-section">
+                <h3>💸 Record a Payment</h3>
+                <form id="trip-payment-form">
+                    <div class="payment-form-group">
+                        <select id="trip-payment-to" required>
+                            <option value="">To whom?</option>
+                        </select>
+                        <span class="arrow">←</span>
+                        <select id="trip-payment-from" required>
+                            <option value="">Who is paying?</option>
+                        </select>
+                        <input type="number" id="trip-payment-amount" placeholder="Amount ₹" step="0.01" required>
+                        <button type="submit" class="payment-btn">Record Payment</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Add Expense Form -->
+            <div class="transaction-form">
+                <h3>➕ Add Expense</h3>
+                <form id="expense-form">
+                    <div class="form-group">
+                        <label for="expense-date">Date *</label>
+                        <input type="date" id="expense-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-day">Day of Trip - Optional</label>
+                        <input type="number" id="expense-day" placeholder="e.g., Day 1, Day 2" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-category">Category *</label>
+                        <select id="expense-category" required>
+                            <option value="">Select category...</option>
+                            <option value="🏨 Accommodation">🏨 Accommodation</option>
+                            <option value="🚗 Transport">🚗 Transport</option>
+                            <option value="🍽️ Food & Drinks">🍽️ Food & Drinks</option>
+                            <option value="🎯 Activities">🎯 Activities</option>
+                            <option value="🛍️ Shopping">🛍️ Shopping</option>
+                            <option value="📱 Other">📱 Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-description">Description *</label>
+                        <input type="text" id="expense-description" placeholder="e.g., Hotel booking, Dinner, Taxi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-paid-by">Who Paid? *</label>
+                        <select id="expense-paid-by" required>
+                            <option value="">Select participant...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-amount">Amount (₹) *</label>
+                        <input type="number" id="expense-amount" placeholder="Enter amount..." step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="expense-split-equally" checked>
+                            <span>Split equally among all participants</span>
+                        </label>
+                    </div>
+                    <div class="form-group" id="expense-split-among-group" style="display: none;">
+                        <label>👥 Who should split this expense? (Select participants):</label>
+                        <div id="expense-split-list" class="split-members-list"></div>
+                        <small class="helper-text">💡 Select only participants who participated in this activity</small>
+                    </div>
+                    <button type="submit" class="add-member-btn">Add Expense</button>
+                </form>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="category-breakdown-section">
+                <h3>📊 Expenses by Category</h3>
+                <div id="category-breakdown" class="category-breakdown"></div>
+            </div>
+
+            <!-- Day-wise Breakdown -->
+            <div class="day-breakdown-section">
+                <h3>📅 Expenses by Day</h3>
+                <div id="day-breakdown" class="day-breakdown"></div>
+            </div>
+
+            <!-- Expense History -->
+            <div class="transaction-history">
+                <div class="history-header">
+                    <h3>Expense History</h3>
+                    <div class="download-buttons">
+                        <button id="export-trip-csv" class="download-btn csv-btn">Export CSV</button>
+                        <button id="export-trip-pdf" class="download-btn pdf-btn">Export PDF</button>
+                    </div>
+                </div>
+                <ul id="expense-list" class="transaction-list">
+                    <!-- Expenses will be added here dynamically -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="trip-script.js"></script>
+</body>
+</html>

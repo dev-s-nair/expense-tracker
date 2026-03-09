@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <button id="dark-mode-toggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
+        <span class="dark-mode-icon"></span>
+    </button>
+
+    <div class="container" id="group-tracker">
+        <div class="tracker-header">
+            <button id="back-from-group" class="back-btn" onclick="history.back()">← BACK</button>
+            <h1>Group Expense Splitter</h1>
+        </div>
+        <p class="subtitle">Split bills and settle up with friends</p>
+        <hr class="section-divider">
+        
+        <!-- Group Members Section -->
+        <div class="members-section">
+            <h3>👥 Group Members</h3>
+            <div class="member-input-group">
+                <input type="text" id="member-name" placeholder="Enter member name...">
+                <button id="add-member-btn" class="add-member-btn">Add Member</button>
+            </div>
+            <div id="members-list" class="members-list"></div>
+            <div class="member-stats" id="member-stats"></div>
+        </div>
+
+        <!-- Balance Display -->
+        <div class="balance-section">
+            <h3>Total Group Expenses</h3>
+            <h2 id="balance">₹0.00</h2>
+        </div>
+
+        <!-- Income & Expense Summary -->
+        <div class="summary">
+            <div class="summary-item income-box">
+                <h4>Total Paid</h4>
+                <p id="income">₹0.00</p>
+            </div>
+            <div class="summary-item expense-box">
+                <h4>Per Person</h4>
+                <p id="expense">₹0.00</p>
+            </div>
+        </div>
+
+        <!-- Settlement Section -->
+        <div class="settlement-section">
+            <h3>💳 Who Owes Whom</h3>
+            <hr class="content-divider">
+            <div id="settlements-list" class="settlements-list">
+                <p class="empty-message">Add members and expenses to see settlements</p>
+            </div>
+        </div>
+
+        <!-- Settlement Payments Section -->
+        <div class="payment-section">
+            <h3>💸 Record a Payment</h3>
+            <form id="payment-form">
+                <div class="payment-form-group">
+                    <select id="payment-to" required>
+                        <option value="">To whom?</option>
+                    </select>
+                    <span class="arrow">←</span>
+                    <select id="payment-from" required>
+                        <option value="">Who is paying?</option>
+                    </select>
+                    <input type="number" id="payment-amount" placeholder="Amount ₹" step="0.01" required>
+                    <button type="submit" class="payment-btn">Record Payment</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Add Transaction Form -->
+        <div class="transaction-form">
+            <h3>➕ Add Expense</h3>
+            <form id="form">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" placeholder="e.g., Lunch, Taxi, Hotel..." required>
+                </div>
+                <div class="form-group">
+                    <label for="paid-by">Who Paid?</label>
+                    <select id="paid-by" required>
+                        <option value="">Select member...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="Enter amount..." step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="split-equally" checked>
+                        <span>Split equally among all group members</span>
+                    </label>
+                </div>
+                <div class="form-group" id="split-among-group" style="display: none;">
+                    <label>👥 Who should split this expense? (Select members):</label>
+                    <div id="split-members-list" class="split-members-list"></div>
+                    <small class="helper-text">💡 Select only members who participated in this activity</small>
+                </div>
+                <button type="submit" class="add-member-btn">Add Expense</button>
+            </form>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="transaction-history">
+            <div class="history-header">
+                <h3>Expense History</h3>
+                <div class="download-buttons">
+                    <button id="clear-all-btn" class="download-btn clear-btn">Clear All Data</button>
+                    <button id="download-csv" class="download-btn csv-btn">Download CSV</button>
+                    <button id="download-pdf" class="download-btn pdf-btn">Download PDF</button>
+                </div>
+            </div>
+            <ul id="transaction-list" class="transaction-list">
+                <!-- Transactions will be added here dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="group-script.js"></script>
+</body>
+</html>
